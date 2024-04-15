@@ -103,6 +103,14 @@ defmodule Figlet do
                                    |_|
   """
   def text(input, opts \\ []) when is_binary(input) do
+    Enum.each(lines(input, opts), &IO.puts/1)
+  end
+
+  @doc """
+  Returns the rendered line data for the `input` text.
+  """
+  @spec lines(String.t(), Keyword.t()) :: [String.t()]
+  def lines(input, opts \\ []) do
     {:ok, font} =
       opts
       |> Keyword.get(:font, @default_font)
@@ -111,12 +119,11 @@ defmodule Figlet do
 
     charlist = String.to_charlist(input)
 
-    Enum.each(1..font.meta.height, fn x ->
+    Enum.map(1..font.meta.height, fn x ->
       Enum.reduce(charlist, "", fn chr, slice_acc ->
         slice_acc <> font.char_map[chr].slices[x]
       end)
       |> String.replace(font.meta.hard_blank, " ")
-      |> IO.puts()
     end)
   end
 
